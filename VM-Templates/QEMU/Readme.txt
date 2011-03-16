@@ -11,11 +11,9 @@ Windows users
 --------------
 To start the preinstalled ReactOS version, just execute the "boot.bat" file.
 
-You can improve the speed of this virtual machine by installing Kqemu.
-It is available at http://www.h7.dion.ne.jp/~qemu-win (Section "Accelerators")
-
-If you want to access files of the virtual hard disk, download and install VDK
-from http://chitchat.at.infoseek.co.jp/vmware/vdk.html
+If you want to access files of the virtual hard disk, download and install the
+VMware DiskMount Utility from
+http://downloads.vmware.com/d/details/disk_mount_utility_5_5_driver_tools.
 This tool allows you to mount the virtual hard disk in your Windows system.
 
 
@@ -27,9 +25,6 @@ Then open a Terminal, change the current directory to the directory containing
 the "ReactOS.vmdk" file and execute the following command:
 
    qemu -m 128 -hda ReactOS.vmdk
-
-You can improve the speed of the virtual machine by installing the appropriate
-Kqemu package for your system.
 
 If you want to access and modify files of the virtual hard disk, you have to
 convert it to the "raw" format.

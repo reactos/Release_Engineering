@@ -11,10 +11,9 @@ ide0:0.fileName = "ReactOS.vmdk"
 
 Ethernet0.present = "TRUE"
 Ethernet0.addressType = "generated"
+Ethernet0.connectionType = "nat"
 Ethernet0.generatedAddress = "00:0c:29:7c:4c:8b"
 Ethernet0.generatedAddressOffset = "0"
 uuid.action = "create"
 uuid.location = "56 4d f3 82 2e e6 c2 57-a8 3d d3 58 af 7c 4c 8b"
 uuid.bios = "56 4d f3 82 2e e6 c2 57-a8 3d d3 58 af 7c 4c 8b"
-
-usb.present = "FALSE"
