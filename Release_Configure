@@ -1,0 +1,35 @@
+#!/bin/bash
+# ReactOS Release Engineering Scripts
+# Release_Configure - Set up a release configuration. First script to execute!
+
+# Sanity checks
+if [ "$ROS_ARCH" = "" ]; then
+        echo Please run this script inside RosBE!
+        exit 1
+fi
+
+echo "*******************************************************************************"
+echo "*                      ReactOS Release Engineering Scripts                    *"
+echo "*******************************************************************************"
+echo
+
+# Ask for the version
+while [ "$version" = "" ]; do
+	echo What ReactOS version number do you want to release?
+	read version
+	echo
+done
+
+# Ask for the branch name
+while [ "$branch_name" = "" ]; do
+	echo What is the name of the SVN branch?
+	read branch_name
+	echo
+done
+
+# Write the config file
+echo "version=${version}" > Release_Config
+echo "branch_name=${branch_name}" >> Release_Config
+
+echo "Configuration file written!"
+echo "Now you can use the other Release_* commands to create the packages."

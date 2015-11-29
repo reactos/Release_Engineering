@@ -1,0 +1,55 @@
+#!/bin/bash
+# ReactOS Release Engineering Scripts
+# Release_ISOs - Create the "-iso.zip" and "-live.zip" packages
+
+# Sanity checks
+if ! source ./Release_Config; then
+	echo Please run Release_Configure first!
+	exit 1
+fi
+
+if [ "$ROS_ARCH" = "" ]; then
+	echo Please run this script inside RosBE!
+	exit 1
+fi
+
+# Constants
+ROOTDIR="$PWD"
+WORKDIR="$PWD/Release_WorkDir/ISOs"
+OUTPUTDIR="output-MinGW-i386"
+BOOTCDISO="ReactOS-${version}.iso"
+BOOTCDZIP="ReactOS-${version}-iso.zip"
+LIVECDISO="ReactOS-${version}-Live.iso"
+LIVECDZIP="ReactOS-${version}-live.zip"
+
+# Start from a clean state
+rm -f "${ROOTDIR}/${BOOTCDZIP}"
+rm -f "${ROOTDIR}/${LIVECDZIP}"
+rm -rf "${WORKDIR}"
+mkdir -p "${WORKDIR}"
+svn co "https://svn.reactos.org/reactos/branches/${branch_name}/reactos" "${WORKDIR}" || exit 1
+svn co "https://svn.reactos.org/reactos/branches/${branch_name}/rosapps" "${WORKDIR}/modules/rosapps" || exit 1
+svn co "https://svn.reactos.org/reactos/branches/${branch_name}/wallpapers" "${WORKDIR}/modules/wallpapers" || exit 1
+
+# Build ReactOS
+cd "${WORKDIR}" || exit 1
+./configure.sh || exit 1
+cd "${WORKDIR}/${OUTPUTDIR}/reactos" || exit 1
+ninja bootcd || exit 1
+ninja livecd || exit 1
+
+# Create the ZIP packages
+mv "bootcd.iso" "${BOOTCDISO}" || exit 1
+zip "${ROOTDIR}/${BOOTCDZIP}" "${BOOTCDISO}" || exit 1
+mv "livecd.iso" "${LIVECDISO}" || exit 1
+zip "${ROOTDIR}/${LIVECDZIP}" "${LIVECDISO}" || exit 1
+
+# We're done!
+echo
+echo "*******************************************************************************"
+echo "Successfully created the following packages:"
+echo
+echo "   - ${BOOTCDZIP}"
+echo "   - ${LIVECDZIP}"
+echo "*******************************************************************************"
+echo
