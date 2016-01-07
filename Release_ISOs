@@ -31,6 +31,12 @@ svn co "https://svn.reactos.org/reactos/branches/${branch_name}/reactos" "${WORK
 svn co "https://svn.reactos.org/reactos/branches/${branch_name}/rosapps" "${WORKDIR}/modules/rosapps" || exit 1
 svn co "https://svn.reactos.org/reactos/branches/${branch_name}/wallpapers" "${WORKDIR}/modules/wallpapers" || exit 1
 
+# Create an "optional" folder and fill it with all files we may distribute.
+# Currently, this is only the wine_gecko package. Just download all wine_gecko packages and the reactos.dff.in will pick the right one.
+mkdir "${WORKDIR}/modules/optional" || exit 1
+cd "${WORKDIR}/modules/optional" || exit 1
+wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/amine" -A "wine_gecko*.msi" || exit 1
+
 # Build ReactOS
 cd "${WORKDIR}" || exit 1
 ./configure.sh || exit 1
