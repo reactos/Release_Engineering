@@ -15,14 +15,14 @@ echo
 
 # Ask for the version
 while [ "$version" = "" ]; do
-	echo What ReactOS version number do you want to release?
+	echo What ReactOS version number do you want to release? (e.g. "0.4.0" or "0.4.0-RC1")
 	read version
 	echo
 done
 
 # Ask for the branch name
 while [ "$branch_name" = "" ]; do
-	echo What is the name of the SVN branch?
+	echo What is the name of the SVN branch? (e.g. "ros-branch-0_4_0")
 	read branch_name
 	echo
 done
