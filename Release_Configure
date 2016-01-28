@@ -4,7 +4,7 @@
 
 # Sanity checks
 if [ "$ROS_ARCH" = "" ]; then
-        echo Please run this script inside RosBE!
+        echo "Please run this script inside RosBE!"
         exit 1
 fi
 
@@ -15,14 +15,14 @@ echo
 
 # Ask for the version
 while [ "$version" = "" ]; do
-	echo What ReactOS version number do you want to release? (e.g. "0.4.0" or "0.4.0-RC1")
+	echo "What ReactOS version number do you want to release? (e.g. \"0.4.0\" or \"0.4.0-RC1\")"
 	read version
 	echo
 done
 
 # Ask for the branch name
 while [ "$branch_name" = "" ]; do
-	echo What is the name of the SVN branch? (e.g. "ros-branch-0_4_0")
+	echo "What is the name of the SVN branch? (e.g. \"ros-branch-0_4_0\")"
 	read branch_name
 	echo
 done

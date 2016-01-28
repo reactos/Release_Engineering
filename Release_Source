@@ -4,12 +4,12 @@
 
 # Sanity checks
 if ! source ./Release_Config; then
-	echo Please run Release_Configure first!
+	echo "Please run Release_Configure first!"
 	exit 1
 fi
 
 if [ "$ROS_ARCH" = "" ]; then
-	echo Please run this script inside RosBE!
+	echo "Please run this script inside RosBE!"
 	exit 1
 fi
 
