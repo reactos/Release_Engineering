@@ -15,21 +15,15 @@ fi
 
 # Constants
 ROOTDIR="$PWD"
-WORKDIR="$PWD/Release_WorkDir/Source"
 EXPORTDIR="ReactOS-${version}"
 SOURCEZIP="ReactOS-${version}-src.zip"
 
 # Start from a clean state
 rm -f "${ROOTDIR}/${SOURCEZIP}"
-rm -rf "${WORKDIR}"
-mkdir -p "${WORKDIR}"
-svn export "https://svn.reactos.org/reactos/branches/${branch_name}/reactos" "${WORKDIR}/${EXPORTDIR}" || exit 1
-svn export "https://svn.reactos.org/reactos/branches/${branch_name}/rosapps" "${WORKDIR}/${EXPORTDIR}/modules/rosapps" || exit 1
-svn export "https://svn.reactos.org/reactos/branches/${branch_name}/wallpapers" "${WORKDIR}/${EXPORTDIR}/modules/wallpapers" || exit 1
 
 # Create the ZIP package
-cd "${WORKDIR}"
-zip -r "${ROOTDIR}/${SOURCEZIP}" "${EXPORTDIR}"
+cd "${REPODIR}"
+git archive --format=zip --prefix="${EXPORTDIR}/" -9 --output="${ROOTDIR}/${SOURCEZIP}" "${branch_name}" || exit 1
 
 # We're done!
 echo

@@ -15,7 +15,6 @@ fi
 
 # Constants
 ROOTDIR="$PWD"
-WORKDIR="$PWD/Release_WorkDir/ISOs"
 OUTPUTDIR="output-MinGW-i386"
 BOOTCDISO="ReactOS-${version}.iso"
 BOOTCDZIP="ReactOS-${version}-iso.zip"
@@ -25,15 +24,10 @@ LIVECDZIP="ReactOS-${version}-live.zip"
 # Start from a clean state
 rm -f "${ROOTDIR}/${BOOTCDZIP}"
 rm -f "${ROOTDIR}/${LIVECDZIP}"
-rm -rf "${WORKDIR}"
-mkdir -p "${WORKDIR}"
-svn co "https://svn.reactos.org/reactos/branches/${branch_name}/reactos" "${WORKDIR}" || exit 1
-svn co "https://svn.reactos.org/reactos/branches/${branch_name}/rosapps" "${WORKDIR}/modules/rosapps" || exit 1
-svn co "https://svn.reactos.org/reactos/branches/${branch_name}/wallpapers" "${WORKDIR}/modules/wallpapers" || exit 1
 
 # Download the "optional" folder from svn.reactos.org
-mkdir "${WORKDIR}/modules/optional" || exit 1
-cd "${WORKDIR}/modules/optional" || exit 1
+mkdir "${REPODIR}/modules/optional" || exit 1
+cd "${REPODIR}/modules/optional" || exit 1
 wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional" || exit 1
 
 # Check that all mandatory files exist in the "optional" folder.
@@ -41,9 +35,9 @@ test -f "DroidSansFallback.ttf" || (echo "DroidSansFallback CJK font missing!" &
 test -f "wine_gecko*.msi" || (echo "wine_gecko MSI package missing!" && exit 1)
 
 # Build ReactOS
-cd "${WORKDIR}" || exit 1
-./configure.sh || exit 1
-cd "${WORKDIR}/${OUTPUTDIR}/reactos" || exit 1
+cd "${REPODIR}" || exit 1
+./configure.sh -DENABLE_ROSAPPS=1 -DENABLE_WALLPAPERS=1 || exit 1
+cd "${REPODIR}/${OUTPUTDIR}/reactos" || exit 1
 ninja bootcd || exit 1
 ninja livecd || exit 1
 

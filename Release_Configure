@@ -4,9 +4,12 @@
 
 # Sanity checks
 if [ "$ROS_ARCH" = "" ]; then
-        echo "Please run this script inside RosBE!"
-        exit 1
+	echo "Please run this script inside RosBE!"
+	exit 1
 fi
+
+# Constants
+REPODIR="$PWD/Release_WorkDir/Repo"
 
 echo "*******************************************************************************"
 echo "*                      ReactOS Release Engineering Scripts                    *"
@@ -22,14 +25,30 @@ done
 
 # Ask for the branch name
 while [ "$branch_name" = "" ]; do
-	echo "What is the name of the SVN branch? (e.g. \"ros-branch-0_4_0\")"
+	echo "What is the name of the Git branch? (e.g. \"ros-branch-0_4_0\")"
 	read branch_name
 	echo
 done
 
 # Write the config file
-echo "version=${version}" > Release_Config
+echo "REPODIR=${REPODIR}" > Release_Config
+echo "version=${version}" >> Release_Config
 echo "branch_name=${branch_name}" >> Release_Config
 
-echo "Configuration file written!"
+# Check out the Git repository
+if [ -d "${REPODIR}/.git" ]; then
+	cd "${REPODIR}" || exit 1
+	git clean -d -f -f -x || exit 1
+	git checkout "${branch_name}" || exit 1
+	git remote set-url origin git://git.reactos.org/reactos.git || exit 1
+	git fetch origin || exit 1
+	git reset --hard "origin/${branch_name}" || exit 1
+else
+	rm -rf "${REPODIR}"
+	git clone git://git.reactos.org/reactos.git "${REPODIR}" || exit 1
+	cd "${REPODIR}" || exit 1
+	git checkout "${branch_name}" || exit 1
+fi
+
+echo "Release configured!"
 echo "Now you can use the other Release_* commands to create the packages."
