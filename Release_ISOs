@@ -31,8 +31,15 @@ cd "${REPODIR}/modules/optional" || exit 1
 wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional" || exit 1
 
 # Check that all mandatory files exist in the "optional" folder.
-test -f "DroidSansFallback.ttf" || (echo "DroidSansFallback CJK font missing!" && exit 1)
-test -f "wine_gecko*.msi" || (echo "wine_gecko MSI package missing!" && exit 1)
+if ! [ -f "DroidSansFallback.ttf" ]; then
+	echo "DroidSansFallback CJK font missing!"
+	exit 1
+fi
+
+if ! compgen -G "wine_gecko*.msi" > /dev/null; then
+	echo "wine_gecko MSI package missing!"
+	exit 1
+fi
 
 # Build ReactOS
 cd "${REPODIR}" || exit 1
