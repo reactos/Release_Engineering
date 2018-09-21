@@ -9,6 +9,7 @@ if [ "$ROS_ARCH" = "" ]; then
 fi
 
 # Constants
+ORIGDIR="$PWD"
 REPODIR="$PWD/Release_WorkDir/Repo"
 
 echo "*******************************************************************************"
@@ -17,11 +18,11 @@ echo "**************************************************************************
 echo
 
 # Ask for the version
-while [ "$version" = "" ]; do
-	echo "What ReactOS version number do you want to release? (e.g. \"0.4.0\" or \"0.4.0-RC1\")"
-	read version
-	echo
-done
+echo "What ReactOS version do you want to release? (e.g. \"0.4.10\")"
+echo "This will be used as suffix for the built files."
+echo "If this is an RC, just hit RETURN without entering anything to use a suffix determined by Git (e.g. \"0.4.10-RC-25-gc828fce\")."
+read version
+echo
 
 # Ask for the branch name
 while [ "$branch_name" = "" ]; do
@@ -29,11 +30,6 @@ while [ "$branch_name" = "" ]; do
 	read branch_name
 	echo
 done
-
-# Write the config file
-echo "REPODIR=${REPODIR}" > Release_Config
-echo "version=${version}" >> Release_Config
-echo "branch_name=${branch_name}" >> Release_Config
 
 # Check out the Git repository
 if [ -d "${REPODIR}/.git" ]; then
@@ -50,5 +46,17 @@ else
 	git checkout "${branch_name}" || exit 1
 fi
 
+# Get the suffix from Git if none was entered.
+if [ "${version}" = "" ]; then
+	version=`git describe --abbrev=7 --long`
+fi
+
+# Write the config file
+cd "${ORIGDIR}"
+echo "REPODIR=${REPODIR}" > Release_Config
+echo "version=${version}" >> Release_Config
+echo "branch_name=${branch_name}" >> Release_Config
+
+# All done!
 echo "Release configured!"
 echo "Now you can use the other Release_* commands to create the packages."
