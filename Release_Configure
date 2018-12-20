@@ -36,12 +36,12 @@ if [ -d "${REPODIR}/.git" ]; then
 	cd "${REPODIR}" || exit 1
 	git clean -d -f -f -x || exit 1
 	git checkout "${branch_name}" || exit 1
-	git remote set-url origin git://git.reactos.org/reactos.git || exit 1
+	git remote set-url origin https://github.com/reactos/reactos.git || exit 1
 	git fetch origin || exit 1
 	git reset --hard "origin/${branch_name}" || exit 1
 else
 	rm -rf "${REPODIR}"
-	git clone git://git.reactos.org/reactos.git "${REPODIR}" || exit 1
+	git clone https://github.com/reactos/reactos.git "${REPODIR}" || exit 1
 	cd "${REPODIR}" || exit 1
 	git checkout "${branch_name}" || exit 1
 fi
