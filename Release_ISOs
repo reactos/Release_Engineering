@@ -44,7 +44,7 @@ fi
 # Build ReactOS
 cd "${REPODIR}" || exit 1
 ./configure.sh -DENABLE_ROSAPPS=1 -DENABLE_WALLPAPERS=1 || exit 1
-cd "${REPODIR}/${OUTPUTDIR}/reactos" || exit 1
+cd "${REPODIR}/${OUTPUTDIR}" || exit 1
 ninja bootcd || exit 1
 ninja livecd || exit 1
 

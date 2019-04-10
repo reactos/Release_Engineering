@@ -18,15 +18,15 @@ echo "**************************************************************************
 echo
 
 # Ask for the version
-echo "What ReactOS version do you want to release? (e.g. \"0.4.10\")"
+echo "What ReactOS version do you want to release? (e.g. \"0.4.12\")"
 echo "This will be used as suffix for the built files."
-echo "If this is an RC, just hit RETURN without entering anything to use a suffix determined by Git (e.g. \"0.4.10-RC-25-gc828fce\")."
+echo "If this is an RC, just hit RETURN without entering anything to use a suffix determined by Git (e.g. \"0.4.12-RC-5-g8449527\")."
 read version
 echo
 
 # Ask for the branch name
 while [ "$branch_name" = "" ]; do
-	echo "What is the name of the Git branch? (e.g. \"ros-branch-0_4_0\")"
+	echo "What is the name of the Git branch? (e.g. \"releases/0.4.12\")"
 	read branch_name
 	echo
 done
