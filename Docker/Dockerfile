@@ -27,7 +27,7 @@ RUN wget https://downloads.sourceforge.net/reactos/RosBE-Unix-2.2.1.tar.bz2 \
     && tar -xjf RosBE-Unix-2.2.1.tar.bz2 \
     && rm RosBE-Unix-2.2.1.tar.bz2 \
     && cd RosBE-Unix-2.2.1 \
-    && echo yes | bash CFLAGS="-pipe -O2 -Wl,-S -g0 -march=core2" RosBE-Builder.sh /usr/local/RosBE \
+    && echo yes | CFLAGS="-pipe -O2 -Wl,-S -g0 -march=core2" bash RosBE-Builder.sh /usr/local/RosBE \
     && cd .. \
     && rm -rf RosBE-Unix-2.2.1
 
