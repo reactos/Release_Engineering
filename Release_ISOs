@@ -50,9 +50,9 @@ ninja livecd || exit 1
 
 # Create the ZIP packages
 mv "bootcd.iso" "${BOOTCDISO}" || exit 1
-zip "${ROOTDIR}/${BOOTCDZIP}" "${BOOTCDISO}" || exit 1
+zip -9 "${ROOTDIR}/${BOOTCDZIP}" "${BOOTCDISO}" || exit 1
 mv "livecd.iso" "${LIVECDISO}" || exit 1
-zip "${ROOTDIR}/${LIVECDZIP}" "${LIVECDISO}" || exit 1
+zip -9 "${ROOTDIR}/${LIVECDZIP}" "${LIVECDISO}" || exit 1
 
 # We're done!
 echo
