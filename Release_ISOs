@@ -16,10 +16,10 @@ fi
 # Constants
 ROOTDIR="$PWD"
 OUTPUTDIR="output-MinGW-i386"
-BOOTCDISO="ReactOS-${version}.iso"
-BOOTCDZIP="ReactOS-${version}-iso.zip"
-LIVECDISO="ReactOS-${version}-Live.iso"
-LIVECDZIP="ReactOS-${version}-live.zip"
+BOOTCDISO="ReactOS-${version}-${ROS_ARCH}.iso"
+BOOTCDZIP="ReactOS-${version}-${ROS_ARCH}-iso.zip"
+LIVECDISO="ReactOS-${version}-${ROS_ARCH}-live.iso"
+LIVECDZIP="ReactOS-${version}-${ROS_ARCH}-live.zip"
 
 # Start from a clean state
 rm -f "${ROOTDIR}/${BOOTCDZIP}"
