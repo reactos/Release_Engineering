@@ -48,7 +48,7 @@ fi
 
 # Get the suffix from Git if none was entered.
 if [ "${version}" = "" ]; then
-	version=`git describe --abbrev=7 --long`
+	version=`git describe --abbrev=0`
 fi
 
 # Write the config file
