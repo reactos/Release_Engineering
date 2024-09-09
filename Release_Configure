@@ -46,9 +46,12 @@ else
 	git checkout "${branch_name}" || exit 1
 fi
 
-# Get the suffix from Git if none was entered.
+# Get the version from Git if none was entered.
 if [ "${version}" = "" ]; then
-	version=`git describe --abbrev=0`
+	# Output something like '0.4.15-4-ge1e96bf467b5ea'
+	version_with_hash=`git describe --always`
+	# Extract the part before the last dash to ignore the commit hash
+	version=${version_with_hash%-*}
 fi
 
 # Write the config file
