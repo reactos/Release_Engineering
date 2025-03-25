@@ -32,7 +32,7 @@ RUN wget https://downloads.sourceforge.net/reactos/RosBE-Unix-2.2.1.tar.bz2 \
     && rm -rf RosBE-Unix-2.2.1
 
 RUN git clone https://github.com/reactos/Release_Engineering \
-    && mv Release_Engineering/Release_* /usr/local/bin \
+    && mv Release_Engineering/Scripts/* /usr/local/bin \
     && rm -rf Release_Engineering
 
 CMD ["/usr/local/RosBE/RosBE.sh", "/work"]

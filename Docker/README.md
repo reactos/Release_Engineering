@@ -24,8 +24,8 @@ Below steps outline the process of running it locally.
 ## Building a release
 
 ```bash
-Release_Configure
-# Answer the prompts
-Release_ISOs
-Release_Source
+git clone https://github.com/reactos/reactos.git
+cd reactos
+git checkout releases/0.4.15
+release
 ```
