@@ -12,25 +12,25 @@ echo
 
 # Ensure we are in RosBE.
 if [ "$ROS_ARCH" = "" ]; then
-	echo "Please run this script inside RosBE!"
-	exit 1
+    echo "Please run this script inside RosBE!"
+    exit 1
 fi
 
 # Ensure this is running inside a git directory.
 if [ ! -d "${ROOTDIR}/.git" ]; then
-	echo "Please run this script inside a ReactOS git directory. Release aborted."
-	exit 1
+    echo "Please run this script inside a ReactOS git directory. Release aborted."
+    exit 1
 fi
 
 # Check for internet connection.
 wget -q --spider https://reactos.org
 
 if [ $? -eq 0 ]; then
-	internet=true
+    internet=true
 else
-	echo "Warning! No internet connection detected."
-	echo "Optional modules cannot be downloaded and origin cannot be fetched."
-	echo
+    echo "Warning! No internet connection detected."
+    echo "Optional modules cannot be downloaded and origin cannot be fetched."
+    echo
 fi
 
 # Get version (ex: 0.4.15-4-ge1e96bf467b5ea).
@@ -48,15 +48,15 @@ echo
 
 # Ensure version and branch name are not null.
 if [ "$version" = "" ] || [ "$branch_name" = "" ]; then
-	echo "Version or branch name is NULL! Release aborted."
-	exit 1
+    echo "Version or branch name is NULL! Release aborted."
+    exit 1
 fi
 
 # Clean repository, excluding the modules/optional folder and its contents.
 git clean -d -f -f -x --exclude="/modules/optional/*" || exit 1
 # Fetch changes from origin if we have an internet connection.
 if [ "$internet" ]; then
-	git fetch origin || exit 1
+    git fetch origin || exit 1
 fi
 # Reset to the head of the branch
 git reset --hard HEAD || exit 1
@@ -65,26 +65,29 @@ echo
 # Download the "optional" folder from svn.reactos.org if it isn't already downloaded.
 # Ensure the optional modules folder is there and contains the modules we need.
 if [ -d "${OPTMODDIR}" ] && [ -f "${OPTMODDIR}/DroidSansFallback.ttf" ] && compgen -G "${OPTMODDIR}/wine_gecko*.msi" > /dev/null; then
-	echo "Optional modules already downloaded. Skipping."
-	echo "If you have an issue with the optional modules, re-run this script after deleting the directory:"
-	echo "    ${ROOTDIR}/${OPTMODDIR}"
+    echo "Optional modules already downloaded. Skipping."
+    echo "If you have an issue with the optional modules, re-run this script after deleting the directory:"
+    echo "    ${ROOTDIR}/${OPTMODDIR}"
 elif [ "${internet}" ]; then
-	echo "Downloading optional modules..."
-	mkdir "${OPTMODDIR}" || exit 1
-	cd "${OPTMODDIR}" || exit 1
-	wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional" || exit 1
-	# Check that all mandatory files were downloaded.
-	if [ ! -f "DroidSansFallback.ttf" ]; then
-		echo "DroidSansFallback CJK font missing!"
-		exit 1
-	fi
-	if ! compgen -G "wine_gecko*.msi" > /dev/null; then
-		echo "wine_gecko MSI package missing!"
-		exit 1
-	fi
+    echo "Downloading optional modules..."
+    if [ -d "${OPTMODDIR}" ]; then
+        rm -rf "${OPTMODDIR}"
+    fi
+    mkdir "${OPTMODDIR}" || exit 1
+    cd "${OPTMODDIR}" || exit 1
+    wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional" || exit 1
+    # Check that all mandatory files were downloaded.
+    if [ ! -f "DroidSansFallback.ttf" ]; then
+        echo "DroidSansFallback CJK font missing!"
+        exit 1
+    fi
+    if ! compgen -G "wine_gecko*.msi" > /dev/null; then
+        echo "wine_gecko MSI package missing!"
+        exit 1
+    fi
 else
-	echo "Missing optional modules and no internet connection. Release aborted."
-	exit 1
+    echo "Missing optional modules and no internet connection. Release aborted."
+    exit 1
 fi
 echo
 
