@@ -2,9 +2,8 @@
 
 # Constants
 ROOTDIR="$PWD"
-REPODIR="$PWD/Release_WorkDir/Repo"
-OPTMODULESDIR="${REPODIR}/modules/optional"
-OUTPUTDIR="output-MinGW-i386"
+OPTMODULESDIR="${ROOTDIR}/modules/optional"
+OUTPUTDIR="${ROOTDIR}/output-MinGW-i386"
 
 echo "*******************************************************************************"
 echo "*                            ReactOS Release Script                           *"
@@ -18,7 +17,7 @@ if [ "$ROS_ARCH" = "" ]; then
 fi
 
 # Ensure this is running inside a git directory.
-if [ ! -d "${REPODIR}/.git" ]; then
+if [ ! -d "${ROOTDIR}/.git" ]; then
 	echo "Please run this script inside a ReactOS git directory. Release aborted."
 	exit 1
 fi
@@ -53,16 +52,14 @@ if [ "$version" = "" ] || [ "$branch_name" = "" ]; then
 	exit 1
 fi
 
-# Ensure git is in a good state.
-echo "Cleaning git repository..."
-cd "${REPODIR}" || exit 1
+# Clean repository, excluding the modules/optional folder and its contents.
 git clean -d -f -f -x --exclude="/modules/optional/*" || exit 1
-git remote set-url origin https://github.com/reactos/reactos.git || exit 1
+# Fetch changes from origin if we have an internet connection.
 if [ "$internet" ]; then
 	git fetch origin || exit 1
 fi
-git checkout "${branch_name}" || exit 1
-git reset --hard "origin/${branch_name}" || exit 1
+# Reset to the head of the branch
+git reset --hard HEAD || exit 1
 echo
 
 # Download the "optional" folder from svn.reactos.org if it isn't already downloaded.
@@ -101,14 +98,10 @@ LIVECDZIP="ReactOS-${version}-${ROS_ARCH}-live.zip"
 EXPORTDIR="ReactOS-${version}"
 SOURCEZIP="ReactOS-${version}-src.zip"
 
-# Checks passed! Delete any reminant BootCD and LiveCD deliverables.
-rm -f "${ROOTDIR}/${BOOTCDZIP}"
-rm -f "${ROOTDIR}/${LIVECDZIP}"
-
 # Build ReactOS
-cd "${REPODIR}" || exit 1
+cd "${ROOTDIR}" || exit 1
 ./configure.sh -DENABLE_ROSAPPS=1 -DENABLE_WALLPAPERS=1 || exit 1
-cd "${REPODIR}/${OUTPUTDIR}" || exit 1
+cd "${OUTPUTDIR}" || exit 1
 ninja bootcd || exit 1
 ninja livecd || exit 1
 
@@ -119,20 +112,16 @@ zip -9 "${ROOTDIR}/${BOOTCDZIP}" "${BOOTCDISO}" || exit 1
 mv "livecd.iso" "${LIVECDISO}" || exit 1
 zip -9 "${ROOTDIR}/${LIVECDZIP}" "${LIVECDISO}" || exit 1
 
-# Delete any reminant source deliverable
-rm -f "${ROOTDIR}/${SOURCEZIP}"
-
 # Create the ZIP package for the source deliverable
 echo "Creating source ZIP package..."
-cd "${REPODIR}"
+cd "${ROOTDIR}"
 git archive --format=zip --prefix="${EXPORTDIR}/" -9 --output="${ROOTDIR}/${SOURCEZIP}" "${branch_name}" || exit 1
 
 # We're done!
 echo
 echo "*******************************************************************************"
 echo "Successfully created the following packages:"
-echo
-echo "   - ${BOOTCDZIP}"
-echo "   - ${LIVECDZIP}"
-echo "   - ${SOURCEZIP}"
+echo "    ${ROOTDIR}/${BOOTCDZIP}"
+echo "    ${ROOTDIR}/${LIVECDZIP}"
+echo "    ${ROOTDIR}/${SOURCEZIP}"
 echo "*******************************************************************************"
