@@ -2,8 +2,8 @@
 
 # Constants
 ROOTDIR="$PWD"
-OPTMODULESDIR="${ROOTDIR}/modules/optional"
-OUTPUTDIR="${ROOTDIR}/output-MinGW-i386"
+OPTMODDIR="modules/optional"
+OUTPUTDIR="output-MinGW-i386"
 
 echo "*******************************************************************************"
 echo "*                            ReactOS Release Script                           *"
@@ -63,32 +63,30 @@ git reset --hard HEAD || exit 1
 echo
 
 # Download the "optional" folder from svn.reactos.org if it isn't already downloaded.
-if [ -d "${OPTMODULESDIR}" ]; then
+# Ensure the optional modules folder is there and contains the modules we need.
+if [ -d "${OPTMODDIR}" ] && [ -f "${OPTMODDIR}/DroidSansFallback.ttf" ] && compgen -G "${OPTMODDIR}/wine_gecko*.msi" > /dev/null; then
 	echo "Optional modules already downloaded. Skipping."
 	echo "If you have an issue with the optional modules, re-run this script after deleting the directory:"
-	echo "    ${OPTMODULESDIR}"
-	cd "${OPTMODULESDIR}" || exit 1
+	echo "    ${ROOTDIR}/${OPTMODDIR}"
 elif [ "${internet}" ]; then
 	echo "Downloading optional modules..."
-	mkdir "${OPTMODULESDIR}" || exit 1
-	cd "${OPTMODULESDIR}" || exit 1
+	mkdir "${OPTMODDIR}" || exit 1
+	cd "${OPTMODDIR}" || exit 1
 	wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional" || exit 1
+	# Check that all mandatory files were downloaded.
+	if [ ! -f "DroidSansFallback.ttf" ]; then
+		echo "DroidSansFallback CJK font missing!"
+		exit 1
+	fi
+	if ! compgen -G "wine_gecko*.msi" > /dev/null; then
+		echo "wine_gecko MSI package missing!"
+		exit 1
+	fi
 else
 	echo "Missing optional modules and no internet connection. Release aborted."
 	exit 1
 fi
 echo
-
-# Check that all mandatory files exist in the "optional" folder.
-if [ ! -f "DroidSansFallback.ttf" ]; then
-	echo "DroidSansFallback CJK font missing!"
-	exit 1
-fi
-
-if ! compgen -G "wine_gecko*.msi" > /dev/null; then
-	echo "wine_gecko MSI package missing!"
-	exit 1
-fi
 
 # BootCD and LiveCD deliverable constants
 BOOTCDISO="ReactOS-${version}-${ROS_ARCH}-boot.iso"
