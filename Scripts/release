@@ -71,7 +71,7 @@ if [ -d "${OPTMODDIR}" ] && [ -f "${OPTMODDIR}/DroidSansFallback.ttf" ] && compg
 elif [ "${internet}" ]; then
     echo "Downloading optional modules..."
     if [ -d "${OPTMODDIR}" ]; then
-        rm -rf "${OPTMODDIR}"
+        rm -rf "${OPTMODDIR}" || exit 1
     fi
     mkdir "${OPTMODDIR}" || exit 1
     cd "${OPTMODDIR}" || exit 1
