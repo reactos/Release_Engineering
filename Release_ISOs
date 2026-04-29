@@ -1,6 +1,6 @@
 #!/bin/bash
 # ReactOS Release Engineering Scripts
-# Release_ISOs - Create the "-iso.zip" and "-live.zip" packages
+# Release_ISOs - Create the "-iso.zip" package
 
 # Sanity checks
 if ! source ./Release_Config; then
@@ -25,12 +25,9 @@ ROOTDIR="$PWD"
 OUTPUTDIR="output-MinGW-i386"
 BOOTCDISO="ReactOS-${version}-${ROS_PRETTY_ARCH}.iso"
 BOOTCDZIP="ReactOS-${version}-${ROS_PRETTY_ARCH}-iso.zip"
-LIVECDISO="ReactOS-${version}-${ROS_PRETTY_ARCH}-live.iso"
-LIVECDZIP="ReactOS-${version}-${ROS_PRETTY_ARCH}-live.zip"
 
 # Start from a clean state
 rm -f "${ROOTDIR}/${BOOTCDZIP}"
-rm -f "${ROOTDIR}/${LIVECDZIP}"
 
 # Download the "optional" folder from svn.reactos.org
 mkdir "${REPODIR}/modules/optional" || exit 1
@@ -53,13 +50,10 @@ cd "${REPODIR}" || exit 1
 ./configure.sh -DENABLE_ROSAPPS=1 -DENABLE_WALLPAPERS=1 || exit 1
 cd "${REPODIR}/${OUTPUTDIR}" || exit 1
 ninja bootcd || exit 1
-ninja livecd || exit 1
 
 # Create the ZIP packages
 mv "bootcd.iso" "${BOOTCDISO}" || exit 1
 zip -9 "${ROOTDIR}/${BOOTCDZIP}" "${BOOTCDISO}" || exit 1
-mv "livecd.iso" "${LIVECDISO}" || exit 1
-zip -9 "${ROOTDIR}/${LIVECDZIP}" "${LIVECDISO}" || exit 1
 
 # We're done!
 echo
@@ -67,6 +61,5 @@ echo "**************************************************************************
 echo "Successfully created the following packages:"
 echo
 echo "   - ${BOOTCDZIP}"
-echo "   - ${LIVECDZIP}"
 echo "*******************************************************************************"
 echo
