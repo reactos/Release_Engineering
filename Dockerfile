@@ -1,5 +1,5 @@
 FROM ubuntu:24.04
-LABEL org.opencontainers.image.authors="Mark Jansen <mark.jansen@reactos.org>"
+LABEL org.opencontainers.image.authors="Mark Jansen <mark.jansen@reactos.org>, Carl Bialorucki <carl.bialorucki@reactos.org>"
 LABEL Description="RosBE-Unix on Ubuntu with Release Engineering scripts"
 
 WORKDIR /work

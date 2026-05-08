@@ -87,7 +87,7 @@ elif [ "${internet}" ]; then
         exit 1
     fi
 else
-    echo "Missing optional modules and no internet connection. Release aborted."
+    echo "FAILED: Missing optional modules and no internet connection."
     exit 1
 fi
 echo
@@ -117,6 +117,11 @@ cd "${ROOTDIR}"
 git archive --format=zip --prefix="${EXPORTDIR}/" -9 --output="${ROOTDIR}/${DELIVERDIR}/${SOURCEZIP}" "$(git rev-parse HEAD)"
 
 # We're done!
+if [ -z "$internet" ]; then
+    echo
+    echo "Warning: No internet connection. HEAD may be stale."
+    echo "    HEAD: $(git describe)"
+fi
 echo
 echo "*******************************************************************************"
 echo "Successfully created the following packages:"
