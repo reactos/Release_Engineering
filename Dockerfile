@@ -1,5 +1,5 @@
 FROM ubuntu:24.04
-LABEL org.opencontainers.image.authors="Mark Jansen <mark.jansen@reactos.org>"
+LABEL org.opencontainers.image.authors="Mark Jansen <mark.jansen@reactos.org>, Carl Bialorucki <carl.bialorucki@reactos.org>"
 LABEL Description="RosBE-Unix on Ubuntu with Release Engineering scripts"
 
 WORKDIR /work
@@ -31,8 +31,8 @@ RUN wget https://downloads.sourceforge.net/reactos/RosBE-Unix-2.2.1.tar.bz2 \
     && cd .. \
     && rm -rf RosBE-Unix-2.2.1
 
-RUN git clone https://github.com/reactos/Release_Engineering \
-    && mv Release_Engineering/Release_* /usr/local/bin \
-    && rm -rf Release_Engineering
+COPY Scripts/* /usr/local/bin
 
-CMD ["/usr/local/RosBE/RosBE.sh", "/work"]
+RUN git clone https://github.com/reactos/reactos.git /reactos
+
+CMD ["/usr/local/RosBE/RosBE.sh", "/reactos"]
