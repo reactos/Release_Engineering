@@ -17,7 +17,7 @@ jobs:
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: rosbe-unix-release-engineering
-        dockerfile: Docker/Dockerfile
+        dockerfile: Dockerfile
         registry: ghcr.io
         addLatest: true
         username: ${{ github.actor }}

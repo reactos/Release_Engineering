@@ -1,10 +1,13 @@
 #!/bin/bash
+# Fail immediately if there's any errors in the script
+set -euo pipefail
 
 # Constants
 ROOTDIR="$PWD"
 OPTMODDIR="modules/optional"
 OUTPUTDIR="output-MinGW-i386"
 
+echo
 echo "*******************************************************************************"
 echo "*                            ReactOS Release Script                           *"
 echo "*******************************************************************************"
@@ -12,13 +15,13 @@ echo
 
 # Ensure we are in RosBE.
 if [ "$ROS_ARCH" = "" ]; then
-    echo "Please run this script inside RosBE!"
+    echo "FAILED: Release script must be run inside RosBE."
     exit 1
 fi
 
 # Ensure this is running inside a git directory.
 if [ ! -d "${ROOTDIR}/.git" ]; then
-    echo "Please run this script inside a ReactOS git directory. Release aborted."
+    echo "FAILED: Release script must be run inside a ReactOS git directory."
     exit 1
 fi
 
@@ -28,7 +31,7 @@ wget -q --spider https://reactos.org
 if [ $? -eq 0 ]; then
     internet=true
 else
-    echo "Warning! No internet connection detected."
+    echo "Warning: No internet connection detected."
     echo "Optional modules cannot be downloaded and origin cannot be fetched."
     echo
 fi
@@ -39,27 +42,25 @@ version=$(git describe)
 version=${version%-*}
 # Change "release" to "rls", if it is in the version name.
 version=${version/release/rls}
-# Get the branch name.
-branch_name=$(git rev-parse --abbrev-ref HEAD)
 
 echo "ReactOS version is ${version}"
-echo "ReactOS branch name is ${branch_name}"
+echo "ReactOS branch name is $(git rev-parse --abbrev-ref HEAD)"
 echo
 
-# Ensure version and branch name are not null.
-if [ "$version" = "" ] || [ "$branch_name" = "" ]; then
-    echo "Version or branch name is NULL! Release aborted."
+# Ensure version is not null.
+if [ "$version" = "" ]; then
+    echo "FAILED: Version is NULL."
     exit 1
 fi
 
 # Clean repository, excluding the modules/optional folder and its contents.
-git clean -d -f -f -x --exclude="/modules/optional/*" || exit 1
+git clean -d -f -f -x --exclude="/modules/optional/*"
 # Fetch changes from origin if we have an internet connection.
 if [ "$internet" ]; then
-    git fetch origin || exit 1
+    git fetch origin
 fi
 # Reset to the head of the branch
-git reset --hard HEAD || exit 1
+git reset --hard HEAD
 echo
 
 # Download the "optional" folder from svn.reactos.org if it isn't already downloaded.
@@ -71,11 +72,11 @@ if [ -d "${OPTMODDIR}" ] && [ -f "${OPTMODDIR}/DroidSansFallback.ttf" ] && compg
 elif [ "${internet}" ]; then
     echo "Downloading optional modules..."
     if [ -d "${OPTMODDIR}" ]; then
-        rm -rf "${OPTMODDIR}" || exit 1
+        rm -rf "${OPTMODDIR}"
     fi
-    mkdir "${OPTMODDIR}" || exit 1
-    cd "${OPTMODDIR}" || exit 1
-    wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional" || exit 1
+    mkdir "${OPTMODDIR}"
+    cd "${OPTMODDIR}"
+    wget --recursive --level=1 --no-directories --no-parent --execute robots=off "https://svn.reactos.org/optional"
     # Check that all mandatory files were downloaded.
     if [ ! -f "DroidSansFallback.ttf" ]; then
         echo "DroidSansFallback CJK font missing!"
@@ -91,38 +92,35 @@ else
 fi
 echo
 
-# BootCD and LiveCD deliverable constants
-BOOTCDISO="ReactOS-${version}-${ROS_ARCH}-boot.iso"
-BOOTCDZIP="ReactOS-${version}-${ROS_ARCH}-boot.zip"
-LIVECDISO="ReactOS-${version}-${ROS_ARCH}-live.iso"
-LIVECDZIP="ReactOS-${version}-${ROS_ARCH}-live.zip"
+# BootCD deliverable constants
+BOOTCDISO="ReactOS-${version}-${ROS_ARCH}.iso"
+BOOTCDZIP="ReactOS-${version}-${ROS_ARCH}.zip"
 EXPORTDIR="ReactOS-${version}"
 SOURCEZIP="ReactOS-${version}-src.zip"
+DELIVERDIR="deliverables"
+mkdir -p "${ROOTDIR}/${DELIVERDIR}"
 
 # Build ReactOS
-cd "${ROOTDIR}" || exit 1
-./configure.sh -DENABLE_ROSAPPS=1 -DENABLE_WALLPAPERS=1 || exit 1
-cd "${OUTPUTDIR}" || exit 1
-ninja bootcd || exit 1
-ninja livecd || exit 1
+cd "${ROOTDIR}"
+./configure.sh -DENABLE_ROSAPPS=1 -DENABLE_WALLPAPERS=1
+cd "${OUTPUTDIR}"
+ninja bootcd
 
-# Create the ZIP packages for BootCD and LiveCD
-echo "Creating BootCD and LiveCD ZIP packages..."
-mv "bootcd.iso" "${BOOTCDISO}" || exit 1
-zip -9 "${ROOTDIR}/${BOOTCDZIP}" "${BOOTCDISO}" || exit 1
-mv "livecd.iso" "${LIVECDISO}" || exit 1
-zip -9 "${ROOTDIR}/${LIVECDZIP}" "${LIVECDISO}" || exit 1
+# Create the ZIP packages for BootCD
+echo "Creating BootCD ISO ZIP package..."
+mv "bootcd.iso" "${BOOTCDISO}"
+zip -9 "${ROOTDIR}/${DELIVERDIR}/${BOOTCDZIP}" "${BOOTCDISO}"
 
 # Create the ZIP package for the source deliverable
 echo "Creating source ZIP package..."
 cd "${ROOTDIR}"
-git archive --format=zip --prefix="${EXPORTDIR}/" -9 --output="${ROOTDIR}/${SOURCEZIP}" "${branch_name}" || exit 1
+git archive --format=zip --prefix="${EXPORTDIR}/" -9 --output="${ROOTDIR}/${DELIVERDIR}/${SOURCEZIP}" "$(git rev-parse HEAD)"
 
 # We're done!
 echo
 echo "*******************************************************************************"
 echo "Successfully created the following packages:"
-echo "    ${ROOTDIR}/${BOOTCDZIP}"
-echo "    ${ROOTDIR}/${LIVECDZIP}"
-echo "    ${ROOTDIR}/${SOURCEZIP}"
+echo "    ${ROOTDIR}/${DELIVERDIR}/${BOOTCDZIP}"
+echo "    ${ROOTDIR}/${DELIVERDIR}/${SOURCEZIP}"
 echo "*******************************************************************************"
+echo
